@@ -10,8 +10,8 @@
 template<typename T>
 class MyVector {
 private:
-	T* elems;
-	size_t m_capacity;
+	T* m_pBuffer;
+	size_t m_capacity = 0;
 	size_t m_size = 0;
 	const size_t gfactor = 2;
 	void copy(const T* source, T* destination, int size) {
@@ -19,6 +19,7 @@ private:
 			for (int i = 0; i < size; ++i) destination[i] = source[i];
 	}
 public:
+	MyVector(){}
 	MyVector(size_t s);
 	MyVector(MyVector&& v);
 	MyVector(const MyVector& v);
@@ -29,39 +30,40 @@ public:
 	const T& operator[](int idx) const;
 	size_t capacity() const;
 	size_t size() const;
-	void push_back(T elem);
+	void push_back(const T &elem);
+	bool empty() const;
 	~MyVector();
 };
 
 template<typename T>
 inline T& MyVector<T>::operator[](int idx) {
 	LOG;
-	return elems[idx];
+	return m_pBuffer[idx];
 }
 
 template<typename T>
 inline const T& MyVector<T>::operator[](int idx) const {
 	LOG;
-	return elems[idx];
+	return m_pBuffer[idx];
 }
 
 template<typename T>
-inline MyVector<T>::MyVector(size_t s) : elems{ new T[s] }, m_capacity{ s }, m_size{ m_capacity } { LOG }
+inline MyVector<T>::MyVector(size_t s) : m_pBuffer{ new T[s] }, m_capacity{ s }, m_size{ m_capacity } { LOG }
 
 template<typename T>
 inline MyVector<T>::MyVector(MyVector&& v) {
 	LOG;
 	m_capacity = v.m_capacity;
-	elems = v.elems;
+	m_pBuffer = v.m_pBuffer;
 	m_size = m_capacity;
 	v.m_capacity = 0;
-	v.elems = nullptr;
+	v.m_pBuffer = nullptr;
 }
 
 template<typename T>
 inline MyVector<T>::MyVector(std::initializer_list<T> lst) : MyVector(lst.size()) {
 	LOG;
-	std::copy(lst.begin(), lst.end(), elems);
+	std::copy(lst.begin(), lst.end(), m_pBuffer);
 }
 
 template<typename T>
@@ -74,11 +76,11 @@ template<typename T>
 inline MyVector<T>& MyVector<T>::operator=(const MyVector<T>& v) {
 	LOG;
 	if (this == &v) return *this;
-	delete[] elems;
-	elems = new T[v.m_capacity];
+	delete[] m_pBuffer;
+	m_pBuffer = new T[v.m_capacity];
 	m_capacity = v.m_capacity;
 	m_size = m_capacity;
-	copy(v.elems, elems, m_capacity);
+	copy(v.m_pBuffer, m_pBuffer, m_capacity);
 	return *this;
 }
 
@@ -86,13 +88,13 @@ template<typename T>
 inline MyVector<T>& MyVector<T>::operator=(MyVector<T>&& v) {
 	LOG;
 	if (this == &v) return *this;
-	delete[] elems;
+	delete[] m_pBuffer;
 	m_capacity = v.m_capacity;
-	elems = v.elems;
+	m_pBuffer = v.m_pBuffer;
 	m_size = m_capacity;
 
 	v.m_capacity = 0;
-	v.elems = nullptr;
+	v.m_pBuffer = nullptr;
 	return *this;
 }
 
@@ -111,22 +113,34 @@ template<typename T>
 inline MyVector<T>::~MyVector() {
 	LOG;
 	m_capacity = 0;
-	delete[] elems;
-	elems = nullptr;
+	delete[] m_pBuffer;
+	m_pBuffer = nullptr;
 }
 
 template<typename T>
-inline void MyVector<T>::push_back(T elem) {
+inline bool MyVector<T>::empty() const {
+	return m_size == 0;
+}
+
+template<typename T>
+inline void MyVector<T>::push_back(const T &elem) {
 	LOG;
-	if (m_size == m_capacity) {
-		int newsz = gfactor * m_capacity;
-		auto newelems = new T[newsz];
-		copy(elems, newelems, m_size);
-
-		delete[] elems;
-		m_capacity = newsz;
-		elems = newelems;
+	if(empty()) {
+		m_pBuffer = new T[1]{ elem };
+		m_size = 1;
+		m_capacity = 1;
 	}
+	else {
+		if (m_size == m_capacity) {
+			int newsz = gfactor * m_capacity;
+			auto newelems = new T[newsz];
+			copy(m_pBuffer, newelems, m_size);
 
-	elems[m_size++] = elem;
+			delete[] m_pBuffer;
+			m_capacity = newsz;
+			m_pBuffer = newelems;
+		}
+
+		m_pBuffer[m_size++] = elem;
+	}
 }
