@@ -1,0 +1,6 @@
+Calling conventions : https://docs.microsoft.com/en-us/cpp/cpp/calling-conventions?view=msvc-170
+Why not specialize function templates:http://www.gotw.ca/publications/mill17.htm
+https://en.cppreference.com/w/cpp/language/definition (ODR)
+https://learning.oreilly.com/library/view/inside-the-c/0201834545/ (Inside the C++ object model)
+https://tonymarston.co.uk/php-mysql/abstraction.txt
+https://learning.oreilly.com/library/view/introduction-to-80x86/9780763772239/ (x86 Assembly Language)

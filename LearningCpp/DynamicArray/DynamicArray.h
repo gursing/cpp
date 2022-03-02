@@ -18,6 +18,10 @@ private:
 		LOG
 			for (int i = 0; i < size; ++i) destination[i] = source[i];
 	}
+
+	void deallocate(const T *elems, int size) {
+		delete [] elems;
+	}
 public:
 	MyVector(){}
 	MyVector(size_t s);
@@ -113,7 +117,7 @@ template<typename T>
 inline MyVector<T>::~MyVector() {
 	LOG;
 	m_capacity = 0;
-	delete[] m_pBuffer;
+	deallocate(m_pBuffer, capacity());
 	m_pBuffer = nullptr;
 }
 
@@ -136,7 +140,7 @@ inline void MyVector<T>::push_back(const T &elem) {
 			auto newelems = new T[newsz];
 			copy(m_pBuffer, newelems, m_size);
 
-			delete[] m_pBuffer;
+			deallocate(m_pBuffer, capacity());
 			m_capacity = newsz;
 			m_pBuffer = newelems;
 		}

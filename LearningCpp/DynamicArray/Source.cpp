@@ -1,6 +1,11 @@
+#define GREENTRACE
 #include<string>
 #include "DynamicArray.h"
+#include "../Helper/Number.h"
+#include "../Helper/noisy.h"
 #include<iostream>
+
+class Number;
 
 template<typename T>
 constexpr void test(T actual, T expected, std::string testName) {
@@ -90,5 +95,10 @@ void runUnitTests() {
 }
 
 int main() {
-    runUnitTests();
+    //runUnitTests();
+    MyVector<Number> v;
+    for (int i = 0; i < 5; ++i) {
+        std::cout << "\n\n" << std::endl;
+        v.push_back(1);
+    }
 }

@@ -116,6 +116,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,9 +144,8 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Documents\Learning\C++\2022-01-22 Workshop - Templates\2022-01-22 Workshop - Templates\ConsoleColors.h" />
-    <ClInclude Include="..\..\..\..\..\Documents\Learning\C++\2022-01-22 Workshop - Templates\2022-01-22 Workshop - Templates\noisy.h" />
-    <ClInclude Include="..\..\..\..\..\Documents\Learning\C++\2022-01-22 Workshop - Templates\2022-01-22 Workshop - Templates\Number.h" />
+    <ClInclude Include="..\Helper\noisy.h" />
+    <ClInclude Include="..\Helper\Number.h" />
     <ClInclude Include="DynamicArray.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
