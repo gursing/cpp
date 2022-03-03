@@ -9,19 +9,78 @@
 
 template<typename T>
 class MyVector {
+public:
+	class Iterator {
+		T *m_parent;
+	public:
+		Iterator(T *parent)
+			: m_parent{ parent } {
+		}
+		Iterator& operator++() {
+			++m_parent;
+			return *this;
+		}
+		bool operator == (const Iterator& other)const {
+			return m_parent == other.m_parent;
+		}
+		bool operator != (const Iterator& other)const {
+			return m_parent != other.m_parent;
+		}
+		T& operator *() {
+			return *m_parent;
+		}
+	};
+	class Const_Iterator {
+		T* m_parent;
+	public:
+		Const_Iterator(T *parent)
+			: m_parent{ parent } {
+		}
+		Const_Iterator& operator++() {
+			++m_parent;
+			return *this;
+		}
+		bool operator == (const Const_Iterator& other) const {
+			return m_parent == other.m_parent;
+		}
+		bool operator != (const Const_Iterator& other) const {
+			return m_parent != other.m_parent;
+		}
+		const T& operator *()const {
+			return *m_parent;
+		}
+	};
+
+	Iterator begin() {
+		return Iterator{ m_pBuffer };
+	}
+	Iterator end() {
+		return Iterator{ m_pBuffer + m_size };
+	}
+	Const_Iterator begin() const {
+		return Const_Iterator{ m_pBuffer };
+	}
+	Const_Iterator end() const {
+		return Const_Iterator{ m_pBuffer + m_size };
+	}
+	Const_Iterator cbegin() {
+		return Const_Iterator{ m_pBuffer };
+	}
+	Const_Iterator cend() {
+		return Const_Iterator{ m_pBuffer + m_size };
+	}
+
 private:
 	T* m_pBuffer;
 	size_t m_capacity = 0;
 	size_t m_size = 0;
 	const size_t gfactor = 2;
 	void copy(const T* source, T* destination, int size) {
-		LOG
-			for (int i = 0; i < size; ++i) destination[i] = source[i];
+		LOG;
+		for (int i = 0; i < size; ++i) destination[i] = source[i];
 	}
 
-	void deallocate(const T *elems, int size) {
-		delete [] elems;
-	}
+	void deallocate(const T *elems) { delete [] elems; }
 public:
 	MyVector(){}
 	MyVector(size_t s);
@@ -117,7 +176,7 @@ template<typename T>
 inline MyVector<T>::~MyVector() {
 	LOG;
 	m_capacity = 0;
-	deallocate(m_pBuffer, capacity());
+	deallocate(m_pBuffer);
 	m_pBuffer = nullptr;
 }
 
@@ -140,7 +199,7 @@ inline void MyVector<T>::push_back(const T &elem) {
 			auto newelems = new T[newsz];
 			copy(m_pBuffer, newelems, m_size);
 
-			deallocate(m_pBuffer, capacity());
+			deallocate(m_pBuffer);
 			m_capacity = newsz;
 			m_pBuffer = newelems;
 		}

@@ -92,13 +92,34 @@ void runUnitTests() {
     test(vmove[0], 1, "v_move_access");
     test(vmove[1], 2, "v_move_access");
     test(vmove[2], 3, "v_move_access");
+
+    auto it = vmove.begin();
+    test(*it, 1, "v_move_iterator");
+    ++it;
+    test(*it, 2, "v_move_iterator");
+    ++it;
+    test(*it, 3, "v_move_iterator");
+    it = vmove.begin();
+    *it = 5;
+    test(*it, 5, "v_move_iterator_modify");
+
+    auto cit = vmove.cbegin();
+    test(*cit, 1, "v_move_const_iterator");
+    ++cit; 
+    test(*cit, 2, "v_move_const_iterator");
+    ++cit; 
+    test(*cit, 3, "v_move_const_iterator");
+    /*
+    cit = vmove.cbegin();
+    *cit = 5;
+    test(*cit, 5, "v_move_const_iterator_modify");*/
 }
 
 int main() {
-    //runUnitTests();
-    MyVector<Number> v;
+    runUnitTests();
+    /*MyVector<Number> v;
     for (int i = 0; i < 5; ++i) {
         std::cout << "\n\n" << std::endl;
-        v.push_back(1);
-    }
+        v.push_back(i);
+    }*/
 }
