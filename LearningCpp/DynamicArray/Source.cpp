@@ -103,7 +103,20 @@ void runUnitTests() {
     *it = 5;
     test(*it, 5, "v_move_iterator_modify");
 
-    auto cit = vmove.cbegin();
+    auto reverse_iterator_vector = MyVector{ 1, 2, 3 };
+    auto ritb = reverse_iterator_vector.rbegin(), rite = reverse_iterator_vector.rend();
+    test(*ritb, 3, "reverse_iterator");
+    ++ritb;
+    test(*ritb, 2, "reverse_iterator");
+    ++ritb;
+    test(*ritb, 1, "reverse_iterator");
+    /*test(ritb, rite, "reverse_iterator");*/
+    ritb = vmove.rbegin();
+    *ritb = 5;
+    test(*ritb, 5, "reverse_iterator_modify");
+
+    MyVector<int> constvector{ 1, 2, 3 };
+    auto cit = constvector.cbegin();
     test(*cit, 1, "v_move_const_iterator");
     ++cit; 
     test(*cit, 2, "v_move_const_iterator");
@@ -121,5 +134,12 @@ int main() {
     for (int i = 0; i < 5; ++i) {
         std::cout << "\n\n" << std::endl;
         v.push_back(i);
-    }*/
+    }
+
+    auto rit = v.rbegin();
+    while(rit != v.rend()) {
+        std::cout << *rit << " ";
+        ++rit;
+    }
+    std::cout << std::endl;*/
 }

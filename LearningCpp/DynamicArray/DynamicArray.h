@@ -11,9 +11,9 @@ template<typename T>
 class MyVector {
 public:
 	class Iterator {
-		T *m_parent;
+		T* m_parent;
 	public:
-		Iterator(T *parent)
+		Iterator(T* parent)
 			: m_parent{ parent } {
 		}
 		Iterator& operator++() {
@@ -33,7 +33,7 @@ public:
 	class Const_Iterator {
 		T* m_parent;
 	public:
-		Const_Iterator(T *parent)
+		Const_Iterator(T* parent)
 			: m_parent{ parent } {
 		}
 		Const_Iterator& operator++() {
@@ -51,11 +51,36 @@ public:
 		}
 	};
 
+	class Reverse_Iterator {
+		T* m_parent;
+	public:
+		Reverse_Iterator(T* parent) : m_parent{ parent } {}
+		Reverse_Iterator& operator++() {
+			--m_parent;
+			return *this;
+		}
+		bool operator ==(const Reverse_Iterator& other) const {
+			return m_parent == other.m_parent;
+		}
+		bool operator !=(const Reverse_Iterator& other) const {
+			return m_parent != other.m_parent;
+		}
+		T& operator *() {
+			return *m_parent;
+		}
+	};
+
 	Iterator begin() {
 		return Iterator{ m_pBuffer };
 	}
 	Iterator end() {
 		return Iterator{ m_pBuffer + m_size };
+	}
+	Reverse_Iterator rbegin() {
+		return Reverse_Iterator{ m_pBuffer + m_size - 1 };
+	}
+	Reverse_Iterator rend() {
+		return Reverse_Iterator{ m_pBuffer - 1 };
 	}
 	Const_Iterator begin() const {
 		return Const_Iterator{ m_pBuffer };
@@ -80,9 +105,9 @@ private:
 		for (int i = 0; i < size; ++i) destination[i] = source[i];
 	}
 
-	void deallocate(const T *elems) { delete [] elems; }
+	void deallocate(const T* elems) { delete[] elems; }
 public:
-	MyVector(){}
+	MyVector() {}
 	MyVector(size_t s);
 	MyVector(MyVector&& v);
 	MyVector(const MyVector& v);
@@ -93,7 +118,7 @@ public:
 	const T& operator[](int idx) const;
 	size_t capacity() const;
 	size_t size() const;
-	void push_back(const T &elem);
+	void push_back(const T& elem);
 	bool empty() const;
 	~MyVector();
 };
@@ -186,9 +211,9 @@ inline bool MyVector<T>::empty() const {
 }
 
 template<typename T>
-inline void MyVector<T>::push_back(const T &elem) {
+inline void MyVector<T>::push_back(const T& elem) {
 	LOG;
-	if(empty()) {
+	if (empty()) {
 		m_pBuffer = new T[1]{ elem };
 		m_size = 1;
 		m_capacity = 1;
