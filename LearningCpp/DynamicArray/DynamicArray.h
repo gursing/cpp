@@ -50,7 +50,6 @@ public:
 			return *m_parent;
 		}
 	};
-
 	class Reverse_Iterator {
 		T* m_parent;
 	public:
@@ -69,7 +68,6 @@ public:
 			return *m_parent;
 		}
 	};
-
 	Iterator begin() {
 		return Iterator{ m_pBuffer };
 	}
@@ -94,7 +92,6 @@ public:
 	Const_Iterator cend() {
 		return Const_Iterator{ m_pBuffer + m_size };
 	}
-
 private:
 	T* m_pBuffer;
 	size_t m_capacity = 0;
@@ -102,10 +99,16 @@ private:
 	const size_t gfactor = 2;
 	void copy(const T* source, T* destination, int size) {
 		LOG;
-		for (int i = 0; i < size; ++i) destination[i] = source[i];
+		for (int i = 0; i < size; ++i) {
+			new(destination + i) T{ source[i] };
+		}
 	}
-
-	void deallocate(const T* elems) { delete[] elems; }
+	void deallocate(T* elems, int size) {
+		for (int i = 0; i < size; ++i) {
+			elems[i].~T();
+		}
+		operator delete(elems);
+	}
 public:
 	MyVector() {}
 	MyVector(size_t s);
@@ -136,7 +139,7 @@ inline const T& MyVector<T>::operator[](int idx) const {
 }
 
 template<typename T>
-inline MyVector<T>::MyVector(size_t s) : m_pBuffer{ new T[s] }, m_capacity{ s }, m_size{ m_capacity } { LOG }
+inline MyVector<T>::MyVector(size_t s) : m_pBuffer{ static_cast<T*>(operator new(sizeof(T) * s)) }, m_capacity{ s }, m_size{ m_capacity } { LOG; }
 
 template<typename T>
 inline MyVector<T>::MyVector(MyVector&& v) {
@@ -151,7 +154,13 @@ inline MyVector<T>::MyVector(MyVector&& v) {
 template<typename T>
 inline MyVector<T>::MyVector(std::initializer_list<T> lst) : MyVector(lst.size()) {
 	LOG;
-	std::copy(lst.begin(), lst.end(), m_pBuffer);
+	auto it = lst.begin();
+	int i = 0;
+	while (it != lst.end()) {
+		new(m_pBuffer + i) T{ *it };
+		++i;
+		++it;
+	}
 }
 
 template<typename T>
@@ -164,8 +173,8 @@ template<typename T>
 inline MyVector<T>& MyVector<T>::operator=(const MyVector<T>& v) {
 	LOG;
 	if (this == &v) return *this;
-	delete[] m_pBuffer;
-	m_pBuffer = new T[v.m_capacity];
+	deallocate(m_pBuffer, m_size);
+	m_pBuffer = static_cast<T*>(operator new(sizeof(T) * v.m_capacity));
 	m_capacity = v.m_capacity;
 	m_size = m_capacity;
 	copy(v.m_pBuffer, m_pBuffer, m_capacity);
@@ -176,7 +185,7 @@ template<typename T>
 inline MyVector<T>& MyVector<T>::operator=(MyVector<T>&& v) {
 	LOG;
 	if (this == &v) return *this;
-	delete[] m_pBuffer;
+	deallocate(m_pBuffer, m_size);
 	m_capacity = v.m_capacity;
 	m_pBuffer = v.m_pBuffer;
 	m_size = m_capacity;
@@ -201,7 +210,7 @@ template<typename T>
 inline MyVector<T>::~MyVector() {
 	LOG;
 	m_capacity = 0;
-	deallocate(m_pBuffer);
+	deallocate(m_pBuffer, m_size);
 	m_pBuffer = nullptr;
 }
 
@@ -214,21 +223,23 @@ template<typename T>
 inline void MyVector<T>::push_back(const T& elem) {
 	LOG;
 	if (empty()) {
-		m_pBuffer = new T[1]{ elem };
+		m_pBuffer = static_cast<T*>(operator new(sizeof(T)));
+		new(m_pBuffer) T{ elem };
 		m_size = 1;
 		m_capacity = 1;
 	}
 	else {
 		if (m_size == m_capacity) {
-			int newsz = gfactor * m_capacity;
-			auto newelems = new T[newsz];
+			const int newsz = gfactor * m_capacity;
+			auto newelems = static_cast<T*>(operator new(sizeof(T) * newsz));
 			copy(m_pBuffer, newelems, m_size);
 
-			deallocate(m_pBuffer);
+			deallocate(m_pBuffer, m_size);
 			m_capacity = newsz;
 			m_pBuffer = newelems;
 		}
 
-		m_pBuffer[m_size++] = elem;
+		new(m_pBuffer + m_size) T{ elem };
+		++m_size;
 	}
 }

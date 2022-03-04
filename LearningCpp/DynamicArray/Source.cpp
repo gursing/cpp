@@ -130,16 +130,4 @@ void runUnitTests() {
 
 int main() {
     runUnitTests();
-    /*MyVector<Number> v;
-    for (int i = 0; i < 5; ++i) {
-        std::cout << "\n\n" << std::endl;
-        v.push_back(i);
-    }
-
-    auto rit = v.rbegin();
-    while(rit != v.rend()) {
-        std::cout << *rit << " ";
-        ++rit;
-    }
-    std::cout << std::endl;*/
 }
