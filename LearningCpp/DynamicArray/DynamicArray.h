@@ -109,6 +109,9 @@ private:
 		}
 		operator delete(elems);
 	}
+	T* allocate(int size) {
+		return static_cast<T*>(operator new(sizeof(T) * size));
+	}
 public:
 	MyVector() {}
 	MyVector(size_t s);
@@ -139,7 +142,7 @@ inline const T& MyVector<T>::operator[](int idx) const {
 }
 
 template<typename T>
-inline MyVector<T>::MyVector(size_t s) : m_pBuffer{ static_cast<T*>(operator new(sizeof(T) * s)) }, m_capacity{ s }, m_size{ m_capacity } { LOG; }
+inline MyVector<T>::MyVector(size_t s) : m_pBuffer{ allocate(sizeof(T) * s) }, m_capacity{ s }, m_size{ m_capacity } { LOG; }
 
 template<typename T>
 inline MyVector<T>::MyVector(MyVector&& v) {
@@ -174,7 +177,7 @@ inline MyVector<T>& MyVector<T>::operator=(const MyVector<T>& v) {
 	LOG;
 	if (this == &v) return *this;
 	deallocate(m_pBuffer, m_size);
-	m_pBuffer = static_cast<T*>(operator new(sizeof(T) * v.m_capacity));
+	m_pBuffer = allocate(sizeof(T) * v.m_capacity);
 	m_capacity = v.m_capacity;
 	m_size = m_capacity;
 	copy(v.m_pBuffer, m_pBuffer, m_capacity);
@@ -223,7 +226,7 @@ template<typename T>
 inline void MyVector<T>::push_back(const T& elem) {
 	LOG;
 	if (empty()) {
-		m_pBuffer = static_cast<T*>(operator new(sizeof(T)));
+		m_pBuffer = allocate(sizeof(T));
 		new(m_pBuffer) T{ elem };
 		m_size = 1;
 		m_capacity = 1;
@@ -231,7 +234,7 @@ inline void MyVector<T>::push_back(const T& elem) {
 	else {
 		if (m_size == m_capacity) {
 			const int newsz = gfactor * m_capacity;
-			auto newelems = static_cast<T*>(operator new(sizeof(T) * newsz));
+			auto newelems = allocate(sizeof(T) * newsz);
 			copy(m_pBuffer, newelems, m_size);
 
 			deallocate(m_pBuffer, m_size);
