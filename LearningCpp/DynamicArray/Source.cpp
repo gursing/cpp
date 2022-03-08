@@ -24,6 +24,20 @@ MyVector<int> getClone() {
 
 void runUnitTests() {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    MyVector<int> vreserve;
+    test(vreserve.size(), static_cast<size_t>(0), "vreserve_size");
+    vreserve.reserve(5);
+    test(vreserve.size(), static_cast<size_t>(0), "vreserve_size");
+    test(vreserve.capacity(), static_cast<size_t>(5), "vreserve_capacity");
+    vreserve.push_back(1), vreserve.push_back(2), vreserve.push_back(3), vreserve.push_back(4), vreserve.push_back(5);
+    test(vreserve.capacity(), static_cast<size_t>(5), "vreserve_capacity");
+    test(vreserve.size(), static_cast<size_t>(5), "vreserve_size");
+    test(vreserve[0], 1, "vreserve_access");
+    test(vreserve[1], 2, "vreserve_access");
+    test(vreserve[2], 3, "vreserve_access");
+    test(vreserve[3], 4, "vreserve_access");
+    test(vreserve[4], 5, "vreserve_access");
+
     MyVector<int> vempty;
     test(vempty.size(), static_cast<size_t>(0), "vempty_size");
     vempty.push_back(1), vempty.push_back(2), vempty.push_back(3), vempty.push_back(4), vempty.push_back(5);

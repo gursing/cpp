@@ -124,15 +124,49 @@ public:
 	const T& operator[](int idx) const;
 	size_t capacity() const;
 	size_t size() const;
+	void push_back(T&& elem);
 	void push_back(const T& elem);
 	bool empty() const;
+	void reserve(size_t new_capacity);
 	~MyVector();
+	template<typename...U>
+	void emplace_back(U&&... elem) {
+		LOG;
+		if (empty() && m_capacity == 0) {
+			m_pBuffer = allocate(sizeof(T));
+			new(m_pBuffer) T{ std::forward<U>(elem)... };
+			m_size = 1;
+			m_capacity = 1;
+		}
+		else {
+			if (m_size == m_capacity) {
+				reserve(gfactor * m_capacity);
+			}
+
+			new(m_pBuffer + m_size) T{ std::forward<U>(elem)... };
+			++m_size;
+		}
+	}
 };
 
 template<typename T>
 inline T& MyVector<T>::operator[](int idx) {
 	LOG;
 	return m_pBuffer[idx];
+}
+
+template<typename T>
+void MyVector<T>::reserve(size_t new_capacity) {
+	if (new_capacity < m_capacity) {
+		return;
+	}
+	auto newelems = allocate(sizeof(T) * new_capacity);
+	for (size_t i = 0; i < m_size; ++i) {
+		new(newelems + i)T{ std::move(m_pBuffer[i]) };
+	}
+	deallocate(m_pBuffer, m_size);
+	m_capacity = new_capacity;
+	m_pBuffer = newelems;
 }
 
 template<typename T>
@@ -225,24 +259,11 @@ inline bool MyVector<T>::empty() const {
 template<typename T>
 inline void MyVector<T>::push_back(const T& elem) {
 	LOG;
-	if (empty()) {
-		m_pBuffer = allocate(sizeof(T));
-		new(m_pBuffer) T{ elem };
-		m_size = 1;
-		m_capacity = 1;
-	}
-	else {
-		if (m_size == m_capacity) {
-			const int newsz = gfactor * m_capacity;
-			auto newelems = allocate(sizeof(T) * newsz);
-			copy(m_pBuffer, newelems, m_size);
+	emplace_back(elem);
+}
 
-			deallocate(m_pBuffer, m_size);
-			m_capacity = newsz;
-			m_pBuffer = newelems;
-		}
-
-		new(m_pBuffer + m_size) T{ elem };
-		++m_size;
-	}
+template<typename T>
+inline void MyVector<T>::push_back(T&& elem) {
+	LOG;
+	emplace_back(std::move(elem));
 }
