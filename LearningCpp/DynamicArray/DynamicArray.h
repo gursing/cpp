@@ -14,8 +14,7 @@ public:
 		T* m_parent;
 	public:
 		Iterator(T* parent)
-			: m_parent{ parent } {
-		}
+			: m_parent{ parent } {}
 		Iterator& operator++() {
 			++m_parent;
 			return *this;
@@ -29,13 +28,29 @@ public:
 		T& operator *() {
 			return *m_parent;
 		}
+		Iterator operator++(int) {
+			Iterator newit{ m_parent };
+			++m_parent;
+			return newit;
+		}
+		Iterator& operator--() {
+			--m_parent;
+			return *this;
+		}
+		Iterator operator--(int) {
+			Iterator newit{ m_parent };
+			--m_parent;
+			return newit;
+		}
+		int operator-(const Iterator &it) {
+			return m_parent - it.m_parent;
+		}
 	};
 	class Const_Iterator {
 		T* m_parent;
 	public:
 		Const_Iterator(T* parent)
-			: m_parent{ parent } {
-		}
+			: m_parent{ parent } {}
 		Const_Iterator& operator++() {
 			++m_parent;
 			return *this;
