@@ -170,10 +170,99 @@ void print(const std::vector<int>& v) {
 	std::cout << std::endl;
 }
 
-int main() {
-	DList<int> list = { 1,2,3,4,5 };
-	for (int& l : list) {
-		std::cout << l << " ";
+template<typename Iterator>
+void Advance_1(Iterator &itr, int position){
+	itr += position;
+}
+
+template<typename Iterator>
+void Advance_2(Iterator &itr, int position){
+	for (int i = 0; i < position; ++i, ++itr);
+}
+ 
+template<typename Iterator>
+void Advance(Iterator& itr, int position) {
+	if (std::is_same_v<Iterator::iterator_category, std::random_access_iterator_tag>) {
+		std::cout << "Random\n";
+		Advance_1(itr, position);
 	}
-	std::cout << std::endl;
+	else {
+		std::cout << "Forward\n";
+		Advance_2(itr, position);
+	}
+}
+
+template<typename Iterator, typename Predicate>
+Iterator Find(Iterator begin, Iterator end, Predicate pred) {
+	while (begin != end) {
+		if (pred(*begin)) {
+			break;
+		}
+		++begin;
+	}
+	return begin;
+}
+
+
+template<typename Iterator>
+void Test(Iterator begin, Iterator end) {
+	Advance(begin, 3);
+	std::cout << *begin << '\n';
+}
+
+
+void  UsingVector() {
+	MyVector<int> data{ 1,2,3,4,5 };
+	auto itr = data.begin();
+	//itr+= 2 ;
+	//std::cout << *itr ;
+
+	Test(data.begin(), data.end());
+
+	auto pos = Find(data.begin(), data.end(), [](int x) {
+		return x % 2 == 0;
+		});
+	if (pos != data.end()) {
+		std::cout << "Found at:" << pos - data.begin() << '\n';
+	}
+
+}
+//
+//void  UsingList() {
+//	List<int> data{ 5,4,3,2,1 };
+//
+//	auto itr = data.begin();
+//	int position{ 2 };
+//	Test(data.begin(), data.end());
+//
+//	auto pos = Find(data.begin(), data.end(), [](int x) {
+//		return x % 2 == 0;
+//		});
+//	if (pos != data.end()) {
+//		std::cout << "Found at:" << pos-data.begin() << '\n' ;
+//	}
+//
+//}
+
+void usingCopy() {
+	MyVector<int> source{ 1,2,3,4,5 };
+	List<int> dest;
+	std::copy(source.begin(), source.end(), dest.begin());
+	for (auto d : dest) {
+		std::cout << d << ' ';
+	}
+}
+
+
+int main() {
+	MyVector<int> v = { 1,2,3,4,5 };
+	auto it = v.begin();
+	Advance(it, 3);
+	std::cout << *it << std::endl;
+
+
+	List<int> l = { 5,4,3,2,1 };
+	auto lit = l.begin();
+	Advance(lit, 3);
+	std::cout << *lit << std::endl;
 }
