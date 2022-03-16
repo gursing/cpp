@@ -147,6 +147,8 @@
     <ClInclude Include="..\Helper\noisy.h" />
     <ClInclude Include="..\Helper\Number.h" />
     <ClInclude Include="DynamicArray.h" />
+    <ClInclude Include="SDList.h" />
+    <ClInclude Include="SList.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

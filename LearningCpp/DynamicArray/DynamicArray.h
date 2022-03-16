@@ -13,6 +13,11 @@ public:
 	class Iterator {
 		T* m_parent;
 	public:
+		using iterator_category = std::random_access_iterator_tag;
+		using value_type = T;
+		using difference_type = size_t;
+		using pointer = T*;
+		using reference = T&;
 		Iterator(T* parent)
 			: m_parent{ parent } {}
 		Iterator& operator++() {
@@ -42,8 +47,16 @@ public:
 			--m_parent;
 			return newit;
 		}
-		int operator-(const Iterator &it) {
+		int operator-(const Iterator &it) const {
 			return m_parent - it.m_parent;
+		}
+		Iterator operator-=(int position) {
+			m_parent -= position;
+			return *this;
+		}
+		Iterator& operator+=(int position) {
+			m_parent += position;
+			return *this;
 		}
 	};
 	class Const_Iterator {
