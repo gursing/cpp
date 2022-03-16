@@ -171,25 +171,28 @@ void print(const std::vector<int>& v) {
 }
 
 template<typename Iterator>
-void Advance_1(Iterator &itr, int position){
+void Advance(Iterator &itr, int position, std::random_access_iterator_tag){
+	std::cout << "Random\n";
 	itr += position;
 }
 
 template<typename Iterator>
-void Advance_2(Iterator &itr, int position){
+void Advance(Iterator &itr, int position, std::forward_iterator_tag){
+	std::cout << "Forward\n";
 	for (int i = 0; i < position; ++i, ++itr);
 }
  
 template<typename Iterator>
 void Advance(Iterator& itr, int position) {
-	if (std::is_same_v<Iterator::iterator_category, std::random_access_iterator_tag>) {
+	Advance(itr, position, typename Iterator::iterator_category{});
+	/*if (std::is_same_v<Iterator::iterator_category, std::random_access_iterator_tag>) {
 		std::cout << "Random\n";
 		Advance_1(itr, position);
 	}
 	else {
 		std::cout << "Forward\n";
 		Advance_2(itr, position);
-	}
+	}*/
 }
 
 template<typename Iterator, typename Predicate>
