@@ -88,6 +88,31 @@ public:
 		T& operator *() {
 			return m_pHead->m_Data;
 		}
+		Iterator operator++(int) {
+			Iterator newit{ m_pHead };
+			m_pHead = m_pHead->next;
+			return newit;
+		}
+		Iterator& operator--() {
+			m_pHead = m_pHead->m_pPrev;
+			return *this;
+		}
+		Iterator operator--(int) {
+			Iterator newit{ m_pHead };
+			m_pHead = m_pHead->m_pPrev;
+			return newit;
+		}
+		int operator-(const Iterator& it) const {
+			return m_pHead - it.m_pHead;
+		}
+		Iterator operator-=(int position) {
+			while (position-- && m_pHead->m_pPrev) m_pHead = m_pHead->m_pPrev;
+			return *this;
+		}
+		Iterator& operator+=(int position) {
+			while (position-- && m_pHead->m_pNext) m_pHead = m_pHead->m_pNext;
+			return *this;
+		}
 	};
 	class Const_Iterator {
 		Node* m_pHead{};
@@ -107,6 +132,25 @@ public:
 			return m_pHead->m_Data;
 		}
 	};
+	class Reverse_Iterator {
+	private:
+		Iterator m_itr;
+	public:
+		constexpr explicit Reverse_Iterator(Iterator itr) : m_itr{ itr } {}
+		Reverse_Iterator& operator++() {
+			--m_itr;
+			return *this;
+		}
+		bool operator ==(const Reverse_Iterator& other) const {
+			return m_itr == other.m_itr;
+		}
+		bool operator !=(const Reverse_Iterator& other) const {
+			return !operator==(other);
+		}
+		T& operator *() {
+			return *m_itr;
+		}
+	};
 	Iterator begin() {
 		return Iterator{ m_pHead };
 	}
@@ -124,6 +168,14 @@ public:
 	}
 	Const_Iterator cend() {
 		return Const_Iterator{ nullptr };
+	}
+	Reverse_Iterator rbegin() {
+		Iterator it{ m_pHead };
+		it += m_Length - 1;
+		return Reverse_Iterator{ Iterator{it} };
+	}
+	Reverse_Iterator rend() {
+		return Reverse_Iterator{ Iterator{ m_pHead->m_pPrev } };
 	}
 #pragma endregion
 };

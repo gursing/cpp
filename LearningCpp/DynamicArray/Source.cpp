@@ -122,11 +122,12 @@ void runDynamicArrayUnitTests() {
 
 	auto reverse_iterator_vector = MyVector{ 1, 2, 3 };
 	auto ritb = reverse_iterator_vector.rbegin(), rite = reverse_iterator_vector.rend();
-	test(*ritb, 3, "reverse_iterator");
-	++ritb;
-	test(*ritb, 2, "reverse_iterator");
-	++ritb;
-	test(*ritb, 1, "reverse_iterator");
+	int pos = reverse_iterator_vector.size() - 1;
+	while (ritb != rite) {
+		test(*ritb, reverse_iterator_vector[pos--], "reverse_iterator");
+		++ritb;
+	}
+	test(pos, -1, "reverse_iterator");
 	/*test(ritb, rite, "reverse_iterator");*/
 	ritb = vmove.rbegin();
 	*ritb = 5;
@@ -148,124 +149,50 @@ void runDynamicArrayUnitTests() {
 	auto newitv = itv++;
 	test(*itv, 2, "v_move_iterator_postfix");
 	test(*newitv, 1, "v_move_iterator_postfix");
-	test(itv - newitv, 1, "v_move_iterator_postfix");
+	test((int)(itv - newitv), 1, "v_move_iterator_postfix");
 	++itv;
 	test(*itv, 3, "v_move_iterator_postfix");
-	test(itv - newitv, 2, "v_move_iterator_postfix");
+	test((int)(itv - newitv), 2, "v_move_iterator_postfix");
 	--itv;
 	test(*itv, 2, "v_move_iterator_postfix");
-	test(itv - newitv, 1, "v_move_iterator_postfix");
+	test((int)(itv - newitv), 1, "v_move_iterator_postfix");
 	auto newnewitv = itv--;
 	test(*newnewitv, 2, "v_move_iterator_postfix");
 	test(*itv, 1, "v_move_iterator_postfix");
-	test(newnewitv - itv, 1, "v_move_iterator_postfix");
-	test(itv - newnewitv, -1, "v_move_iterator_postfix");
+	test((int)(newnewitv - itv), 1, "v_move_iterator_postfix");
+	test((int)(itv - newnewitv), -1, "v_move_iterator_postfix");
 }
 
-void print(const std::vector<int>& v) {
-	std::cout << "####################" << std::endl;
-	std::cout << "capacity: " << v.capacity() << std::endl;
-	std::cout << "size: " << v.size() << std::endl;
-	for (const int& e : v) std::cout << e << " ";
-	std::cout << std::endl;
-}
-
-template<typename Iterator>
-void Advance(Iterator &itr, int position, std::random_access_iterator_tag){
-	std::cout << "Random\n";
-	itr += position;
-}
-
-template<typename Iterator>
-void Advance(Iterator &itr, int position, std::forward_iterator_tag){
-	std::cout << "Forward\n";
-	for (int i = 0; i < position; ++i, ++itr);
-}
- 
-template<typename Iterator>
-void Advance(Iterator& itr, int position) {
-	Advance(itr, position, typename Iterator::iterator_category{});
-	/*if (std::is_same_v<Iterator::iterator_category, std::random_access_iterator_tag>) {
-		std::cout << "Random\n";
-		Advance_1(itr, position);
+void runDoublyLinkedListUnitTests() {
+	DList<int> iterator_list_forward = { 1,2,3,4,5 };
+	std::vector<int> resultv = { 5,4,3,2,1 };
+	DList<int>::Iterator itb = iterator_list_forward.begin(), ite = iterator_list_forward.end();
+	int pos = 0;
+	while (itb != ite) {
+		test(*itb, resultv[pos++], "DList_Iterator");
+		++itb;
 	}
-	else {
-		std::cout << "Forward\n";
-		Advance_2(itr, position);
-	}*/
-}
+	test(pos, 5, "DList_Iterator");
 
-template<typename Iterator, typename Predicate>
-Iterator Find(Iterator begin, Iterator end, Predicate pred) {
-	while (begin != end) {
-		if (pred(*begin)) {
-			break;
-		}
-		++begin;
+	DList<int> random_jump_list = { 1,2,3,4,5 };
+	DList<int>::Iterator random_jump_list_itb = random_jump_list.begin(), random_jump_list_ite = random_jump_list.end();
+	random_jump_list_itb += 3;
+	test(*random_jump_list_itb, 2, "random_jump_iterator_test");
+	random_jump_list_itb -= 3;
+	test(*random_jump_list_itb, 5, "random_jump_iterator_test");
+
+	DList<int> iterator_list_reverse = { 1,2,3,4,5 };
+	std::vector<int> result_reverse = { 1,2,3,4,5 };
+	DList<int>::Reverse_Iterator iterator_list_reverse_itb = iterator_list_reverse.rbegin(), iterator_list_reverse_ite = iterator_list_reverse.rend();
+	int rpos = 0;
+	while (iterator_list_reverse_itb != iterator_list_reverse_ite) {
+		test(*iterator_list_reverse_itb, result_reverse[rpos++], "DList_Iterator_reverse");
+		++iterator_list_reverse_itb;
 	}
-	return begin;
+	test(rpos, 5, "DList_Iterator_reverse");
 }
-
-
-template<typename Iterator>
-void Test(Iterator begin, Iterator end) {
-	Advance(begin, 3);
-	std::cout << *begin << '\n';
-}
-
-
-void  UsingVector() {
-	MyVector<int> data{ 1,2,3,4,5 };
-	auto itr = data.begin();
-	//itr+= 2 ;
-	//std::cout << *itr ;
-
-	Test(data.begin(), data.end());
-
-	auto pos = Find(data.begin(), data.end(), [](int x) {
-		return x % 2 == 0;
-		});
-	if (pos != data.end()) {
-		std::cout << "Found at:" << pos - data.begin() << '\n';
-	}
-
-}
-//
-//void  UsingList() {
-//	List<int> data{ 5,4,3,2,1 };
-//
-//	auto itr = data.begin();
-//	int position{ 2 };
-//	Test(data.begin(), data.end());
-//
-//	auto pos = Find(data.begin(), data.end(), [](int x) {
-//		return x % 2 == 0;
-//		});
-//	if (pos != data.end()) {
-//		std::cout << "Found at:" << pos-data.begin() << '\n' ;
-//	}
-//
-//}
-
-void usingCopy() {
-	MyVector<int> source{ 1,2,3,4,5 };
-	List<int> dest;
-	std::copy(source.begin(), source.end(), dest.begin());
-	for (auto d : dest) {
-		std::cout << d << ' ';
-	}
-}
-
 
 int main() {
-	MyVector<int> v = { 1,2,3,4,5 };
-	auto it = v.begin();
-	Advance(it, 3);
-	std::cout << *it << std::endl;
-
-
-	List<int> l = { 5,4,3,2,1 };
-	auto lit = l.begin();
-	Advance(lit, 3);
-	std::cout << *lit << std::endl;
+	runDynamicArrayUnitTests();
+	runDoublyLinkedListUnitTests();
 }

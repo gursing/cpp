@@ -47,7 +47,7 @@ public:
 			--m_parent;
 			return newit;
 		}
-		int operator-(const Iterator &it) const {
+		int operator-(const Iterator& it) const {
 			return m_parent - it.m_parent;
 		}
 		Iterator operator-=(int position) {
@@ -79,21 +79,22 @@ public:
 		}
 	};
 	class Reverse_Iterator {
-		T* m_parent;
+	private:
+		Iterator m_itr;
 	public:
-		Reverse_Iterator(T* parent) : m_parent{ parent } {}
+		constexpr explicit Reverse_Iterator(MyVector::Iterator itr) : m_itr{ itr } {}
 		Reverse_Iterator& operator++() {
-			--m_parent;
+			--m_itr;
 			return *this;
 		}
 		bool operator ==(const Reverse_Iterator& other) const {
-			return m_parent == other.m_parent;
+			return m_itr == other.m_itr;
 		}
 		bool operator !=(const Reverse_Iterator& other) const {
-			return m_parent != other.m_parent;
+			return !operator==(other);
 		}
 		T& operator *() {
-			return *m_parent;
+			return *m_itr;
 		}
 	};
 	Iterator begin() {
@@ -103,10 +104,10 @@ public:
 		return Iterator{ m_pBuffer + m_size };
 	}
 	Reverse_Iterator rbegin() {
-		return Reverse_Iterator{ m_pBuffer + m_size - 1 };
+		return Reverse_Iterator{ Iterator{m_pBuffer + m_size - 1} };
 	}
 	Reverse_Iterator rend() {
-		return Reverse_Iterator{ m_pBuffer - 1 };
+		return Reverse_Iterator{ Iterator{ m_pBuffer  } };
 	}
 	Const_Iterator begin() const {
 		return Const_Iterator{ m_pBuffer };
@@ -121,7 +122,7 @@ public:
 		return Const_Iterator{ m_pBuffer + m_size };
 	}
 private:
-	T* m_pBuffer;
+	T* m_pBuffer{ nullptr };
 	size_t m_capacity = 0;
 	size_t m_size = 0;
 	const size_t gfactor = 2;
@@ -141,7 +142,7 @@ private:
 		return static_cast<T*>(operator new(sizeof(T) * size));
 	}
 public:
-	MyVector() {}
+	MyVector() : m_pBuffer{ nullptr }, m_size{} {}
 	MyVector(size_t s);
 	MyVector(MyVector&& v);
 	MyVector(const MyVector& v);
