@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClInclude Include="..\Helper\noisy.h" />
     <ClInclude Include="..\Helper\Number.h" />
+    <ClInclude Include="Deque.h" />
     <ClInclude Include="DynamicArray.h" />
     <ClInclude Include="SDList.h" />
     <ClInclude Include="SList.h" />

@@ -6,6 +6,7 @@
 #include "../Helper/noisy.h"
 #include "SList.h"
 #include "SDList.h"
+#include "Deque.h"
 #include<iostream>
 
 class Number;
@@ -192,7 +193,28 @@ void runDoublyLinkedListUnitTests() {
 	test(rpos, 5, "DList_Iterator_reverse");
 }
 
+void runDequeTests() {
+	Deque<int> d;
+	d.push_back(1);
+	d.push_front(2);
+	d.push_back(3);
+	d.push_front(4);
+	test(4, (int)d.size(), "deque_size");
+	test(4, d.front(), "deque_front");
+	test(3, d.back(), "deque_back");
+	d.pop_front();
+	test(2, d.front(), "deque_front");
+	d.pop_back();
+	test(1, d.back(), "deque_back");
+	d.pop_front();
+	test(1, d.back(), "deque_back");
+	test(1, d.front(), "deque_front");
+	d.pop_back();
+	test(0, (int)d.size(), "deque_size");
+}
+
 int main() {
 	runDynamicArrayUnitTests();
 	runDoublyLinkedListUnitTests();
+	runDequeTests();
 }
